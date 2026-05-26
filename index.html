@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DGCreators.CA | Loading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050506;
+            --fg: #ffffff;
+            --hot: #ff2d6a;
+            --cyan: #00f0ff;
+            --lime: #b8ff00;
+            --purple: #a855f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* ===== GLITCH OVERLAY GLOBAL ===== */
+        .glitch-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            animation: glitchFlicker 4s infinite;
+        }
+
+        @keyframes glitchFlicker {
+            0%, 94%, 96%, 98%, 100% { opacity: 0; }
+            95% { opacity: 1; }
+            97% { opacity: 0.7; }
+            99% { opacity: 0.9; }
+        }
+
+        .glitch-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--cyan);
+            opacity: 0.8;
+            animation: glitchLineMove 0.15s steps(2) infinite;
+        }
+
+        @keyframes glitchLineMove {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(100px); }
+            100% { transform: translateY(200px); }
+        }
+
+        /* Scanlines */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.08) 2px,
+                rgba(0, 0, 0, 0.08) 4px
+            );
+        }
+
+        /* Noise */
+        .noise::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        /* Animated grid */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background: 
+                linear-gradient(rgba(255,45,106,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,45,106,0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridZoom 20s linear infinite;
+        }
+
+        @keyframes gridZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Floating orbs with movement */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbMove 12s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,45,106,0.35), transparent 70%);
+            top: -200px; left: -200px;
+        }
+        .orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0,240,255,0.3), transparent 70%);
+            bottom: -150px; right: -150px;
+            animation-delay: -4s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(184,255,0,0.25), transparent 70%);
+            top: 40%; left: 55%;
+            animation-delay: -8s;
+        }
+
+        @keyframes orbMove {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(60px, -50px); }
+            66% { transform: translate(-40px, 40px); }
+        }
+
+        /* Main container */
+        .splash {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 36px;
+        }
+
+        /* ===== LOGO CONTAINER ===== */
+        .logo-wrap {
+            position: relative;
+            width: 220px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Glitch wrapper for logo */
+        .glitch-logo {
+            position: relative;
+            animation: mainGlitch 3s infinite;
+        }
+
+        @keyframes mainGlitch {
+            0%, 92%, 96%, 100% { 
+                transform: translate(0);
+                filter: none;
+            }
+            93% { 
+                transform: translate(-4px, 2px);
+                filter: hue-rotate(90deg);
+            }
+            94% { 
+                transform: translate(4px, -2px);
+                filter: hue-rotate(-90deg);
+            }
+            95% { 
+                transform: translate(-2px, 1px);
+                filter: none;
+            }
+        }
+
+        .glitch-logo::before,
+        .glitch-logo::after {
+            content: 'DG';
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 120px;
+            font-weight: 900;
+            line-height: 1;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            opacity: 0.8;
+        }
+
+        .glitch-logo::before {
+            color: var(--hot);
+            animation: glitchTop 2s infinite;
+            left: 3px;
+        }
+
+        .glitch-logo::after {
+            color: var(--cyan);
+            animation: glitchBot 2.5s infinite;
+            left: -3px;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitchTop {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-5px, -2px); }
+            94% { transform: translate(5px, 2px); }
+        }
+
+        @keyframes glitchBot {
+            0%, 88%, 100% { transform: translate(0); }
+            91% { transform: translate(4px, 1px); }
+            93% { transform: translate(-4px, -1px); }
+        }
+
+        /* Logo text - the actual DG */
+        .logo-text {
+            font-size: 110px;
+            font-weight: 900;
+            letter-spacing: -8px;
+            line-height: 1;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, var(--fg) 0%, var(--hot) 50%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradientFlow 3s ease infinite, logoBuild 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: scale(0.3);
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes logoBuild {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotateX(90deg);
+                filter: blur(20px);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.05) rotateX(-10deg);
+                filter: blur(2px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+                filter: blur(0);
+            }
+        }
+
+        /* Logo glow ring */
+        .logo-ring {
+            position: absolute;
+            inset: -20px;
+            border-radius: 30px;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                        linear-gradient(135deg, var(--hot), var(--cyan), var(--lime)) border-box;
+            opacity: 0;
+            animation: ringBuild 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards;
+            transform: scale(0.8);
+        }
+
+        @keyframes ringBuild {
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .logo-ring::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 38px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            animation: ringSpin 10s linear infinite;
+        }
+
+        @keyframes ringSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Corner accents */
+        .corner-accent {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            opacity: 0;
+        }
+
+        .corner-accent::before,
+        .corner-accent::after {
+            content: '';
+            position: absolute;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .ca-tl { top: -18px; left: -18px; animation: cornerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s forwards; }
+        .ca-tr { top: -18px; right: -18px; animation: cornerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.6s forwards; }
+        .ca-bl { bottom: -18px; left: -18px; animation: cornerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.7s forwards; }
+        .ca-br { bottom: -18px; right: -18px; animation: cornerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.8s forwards; }
+
+        .ca-tl::before { width: 100%; height: 3px; top: 0; left: 0; }
+        .ca-tl::after { width: 3px; height: 100%; top: 0; left: 0; }
+        .ca-tr::before { width: 100%; height: 3px; top: 0; right: 0; }
+        .ca-tr::after { width: 3px; height: 100%; top: 0; right: 0; }
+        .ca-bl::before { width: 100%; height: 3px; bottom: 0; left: 0; }
+        .ca-bl::after { width: 3px; height: 100%; bottom: 0; left: 0; }
+        .ca-br::before { width: 100%; height: 3px; bottom: 0; right: 0; }
+        .ca-br::after { width: 3px; height: 100%; bottom: 0; right: 0; }
+
+        @keyframes cornerPop {
+            from { opacity: 0; transform: scale(0) rotate(-180deg); }
+            to { opacity: 1; transform: scale(1) rotate(0); }
+        }
+
+        /* Glow behind logo */
+        .logo-glow-bg {
+            position: absolute;
+            inset: -40px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--hot), var(--purple));
+            filter: blur(50px);
+            opacity: 0;
+            animation: glowPulse 2s ease-in-out 1.8s forwards;
+        }
+
+        @keyframes glowPulse {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+            100% { opacity: 0.35; transform: scale(1); }
+        }
+
+        /* Floating particles around logo */
+        .particles {
+            position: absolute;
+            inset: -60px;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: particleFloat 3s ease-in-out infinite;
+        }
+
+        .p1 { width: 6px; height: 6px; background: var(--hot); top: 10%; left: 0; animation-delay: 0s; box-shadow: 0 0 12px var(--hot); }
+        .p2 { width: 4px; height: 4px; background: var(--cyan); top: 80%; right: 5%; animation-delay: 0.5s; box-shadow: 0 0 10px var(--cyan); }
+        .p3 { width: 5px; height: 5px; background: var(--lime); bottom: 15%; left: 10%; animation-delay: 1s; box-shadow: 0 0 11px var(--lime); }
+        .p4 { width: 3px; height: 3px; background: var(--purple); top: 30%; right: 0; animation-delay: 1.5s; box-shadow: 0 0 9px var(--purple); }
+        .p5 { width: 4px; height: 4px; background: var(--hot); top: 60%; left: -5%; animation-delay: 2s; box-shadow: 0 0 10px var(--hot); }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+            25% { transform: translate(15px, -20px) scale(1.3); opacity: 1; }
+            50% { transform: translate(-10px, -35px) scale(0.8); opacity: 0.5; }
+            75% { transform: translate(20px, -10px) scale(1.1); opacity: 0.9; }
+        }
+
+        /* Data streams / matrix-like lines */
+        .data-stream {
+            position: absolute;
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, var(--cyan), transparent);
+            opacity: 0;
+            animation: streamFall 2s linear infinite;
+        }
+
+        .ds-1 { left: 10%; top: 0; animation-delay: 0.2s; }
+        .ds-2 { left: 85%; top: 0; animation-delay: 0.8s; }
+        .ds-3 { left: 25%; top: 0; animation-delay: 1.4s; }
+        .ds-4 { left: 70%; top: 0; animation-delay: 1.9s; }
+
+        @keyframes streamFall {
+            0% { transform: translateY(-50px); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(250px); opacity: 0; }
+        }
+
+        /* ===== BRAND TEXT ===== */
+        .brand-wrap {
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .brand-main {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .brand-char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) rotateX(-90deg);
+            animation: charReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .bc-dg { 
+            color: var(--fg); 
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .bc-domain {
+            background: linear-gradient(135deg, var(--hot), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* DGCreators.CA - 13 caracteres con delays escalonados */
+        .ch-d { animation-delay: 1.6s; }
+        .ch-g { animation-delay: 1.72s; }
+        .ch-c { animation-delay: 1.84s; }
+        .ch-r { animation-delay: 1.96s; }
+        .ch-e { animation-delay: 2.08s; }
+        .ch-a { animation-delay: 2.20s; }
+        .ch-t { animation-delay: 2.32s; }
+        .ch-o { animation-delay: 2.44s; }
+        .ch-r2 { animation-delay: 2.56s; }
+        .ch-s { animation-delay: 2.68s; }
+        .ch-dot { 
+            animation-delay: 2.80s; 
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan), 0 0 30px var(--cyan);
+        }
+        .ch-c2 { 
+            animation-delay: 2.92s; 
+            background: linear-gradient(135deg, var(--cyan), var(--lime));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .ch-a2 { 
+            animation-delay: 3.04s; 
+            background: linear-gradient(135deg, var(--lime), var(--hot));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes charReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        .tagline {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-top: 8px;
+            opacity: 0;
+            animation: tagFade 0.6s ease 3.2s forwards;
+        }
+
+        @keyframes tagFade { to { opacity: 1; } }
+
+        /* Tagline glitch effect */
+        .tagline-glitch {
+            position: relative;
+            animation: tagGlitch 5s infinite;
+        }
+
+        @keyframes tagGlitch {
+            0%, 95%, 100% { 
+                text-shadow: none;
+                transform: translate(0);
+            }
+            96% { 
+                text-shadow: -2px 0 var(--hot), 2px 0 var(--cyan);
+                transform: translate(-2px, 1px);
+            }
+            97% { 
+                text-shadow: 2px 0 var(--cyan), -2px 0 var(--lime);
+                transform: translate(2px, -1px);
+            }
+            98% { 
+                text-shadow: none;
+                transform: translate(0);
+            }
+        }
+
+        /* ===== LOADING BAR ===== */
+        .loader-wrap {
+            width: 320px;
+            max-width: 85vw;
+            opacity: 0;
+            animation: loaderIn 0.6s ease 3.4s forwards;
+        }
+
+        @keyframes loaderIn { to { opacity: 1; } }
+
+        .bar-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--hot), var(--cyan), var(--lime), var(--purple));
+            border-radius: 4px;
+            transition: width 0.15s linear;
+            position: relative;
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--cyan), 0 0 30px var(--cyan), 0 0 45px var(--hot);
+            animation: dotPulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes dotPulse {
+            from { transform: translateY(-50%) scale(1); }
+            to { transform: translateY(-50%) scale(1.4); }
+        }
+
+        .bar-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+        }
+
+        .bar-label {
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .bar-pct {
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .status-msg {
+            margin-top: 12px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.02em;
+        }
+
+        /* Status glitch */
+        .status-glitch {
+            animation: statusFx 4s infinite;
+        }
+
+        @keyframes statusFx {
+            0%, 92%, 98%, 100% { opacity: 1; }
+            93% { opacity: 0.3; transform: skewX(20deg); }
+            94% { opacity: 1; transform: skewX(-10deg); }
+            95% { opacity: 0.6; transform: skewX(10deg); }
+            97% { opacity: 1; transform: skewX(0); }
+        }
+
+        /* Skip button */
+        .skip-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 500;
+            background: rgba(255,45,106,0.08);
+            border: 1px solid rgba(255,45,106,0.25);
+            color: var(--hot);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            backdrop-filter: blur(12px);
+            opacity: 0;
+            animation: skipIn 0.5s ease 4s forwards;
+        }
+
+        @keyframes skipIn { to { opacity: 1; } }
+
+        .skip-btn:hover {
+            background: rgba(255,45,106,0.18);
+            border-color: var(--hot);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,45,106,0.25);
+        }
+
+        /* Exit */
+        .exiting .splash {
+            animation: exitAnim 0.6s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+        }
+
+        @keyframes exitAnim {
+            to {
+                transform: scale(1.3);
+                opacity: 0;
+                filter: blur(30px);
+            }
+        }
+
+        .exiting { animation: fadeOut 0.5s ease forwards; }
+
+        @keyframes fadeOut { to { opacity: 0; } }
+
+        /* Responsive */
+        @media(max-width: 640px) {
+            .logo-text { font-size: 80px; letter-spacing: -5px; }
+            .logo-wrap { width: 170px; height: 140px; }
+            .brand-main { font-size: 1.25rem; gap: 3px; }
+            .loader-wrap { width: 270px; }
+            .skip-btn { bottom: 16px; right: 16px; padding: 8px 18px; font-size: 0.72rem; }
+            .data-stream { display: none; }
+        }
+
+        @media(prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="noise">
+
+    <!-- Scanlines overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Glitch overlay -->
+    <div class="glitch-overlay" id="glitchOverlay">
+        <div class="glitch-line" style="top: 20%;"></div>
+        <div class="glitch-line" style="top: 50%; animation-delay: 0.07s;"></div>
+        <div class="glitch-line" style="top: 75%; animation-delay: 0.14s;"></div>
+    </div>
+
+    <!-- Background -->
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Data streams -->
+    <div class="data-stream ds-1"></div>
+    <div class="data-stream ds-2"></div>
+    <div class="data-stream ds-3"></div>
+    <div class="data-stream ds-4"></div>
+
+    <!-- MAIN SPLASH -->
+    <main class="splash" id="splash">
+
+        <!-- LOGO SECTION -->
+        <div class="logo-wrap">
+            
+            <!-- Background glow -->
+            <div class="logo-glow-bg"></div>
+
+            <!-- Rotating ring -->
+            <div class="logo-ring"></div>
+
+            <!-- Corner accents -->
+            <div class="corner-accent ca-tl"></div>
+            <div class="corner-accent ca-tr"></div>
+            <div class="corner-accent ca-bl"></div>
+            <div class="corner-accent ca-br"></div>
+
+            <!-- Particles -->
+            <div class="particles">
+                <div class="particle p1"></div>
+                <div class="particle p2"></div>
+                <div class="particle p3"></div>
+                <div class="particle p4"></div>
+                <div class="particle p5"></div>
+            </div>
+
+            <!-- The DG Text with glitch effect -->
+            <div class="glitch-logo">
+                <span class="logo-text">DG</span>
+            </div>
+        </div>
+
+        <!-- BRAND TEXT - ACTUALIZADO A DGCreators.CA -->
+        <div class="brand-wrap">
+            <h1 class="brand-main">
+                <span class="brand-char bc-dg ch-d">D</span>
+                <span class="brand-char bc-dg ch-g">G</span>
+                <span class="brand-char bc-domain ch-c">C</span>
+                <span class="brand-char bc-domain ch-r">r</span>
+                <span class="brand-char bc-domain ch-e">e</span>
+                <span class="brand-char bc-domain ch-a">a</span>
+                <span class="brand-char bc-domain ch-t">t</span>
+                <span class="brand-char bc-domain ch-o">o</span>
+                <span class="brand-char bc-domain ch-r2">r</span>
+                <span class="brand-char bc-domain ch-s">s</span>
+                <span class="brand-char ch-dot">c</span>
+                <span class="brand-char ch-c2">.</span>
+                <span class="brand-char ch-a2">a</span>
+            </h1>
+            <p class="tagline tagline-glitch">Studio Digital Creativo</p>
+        </div>
+
+        <!-- LOADER -->
+        <div class="loader-wrap">
+            <div class="bar-track">
+                <div class="bar-fill" id="barFill"></div>
+            </div>
+            <div class="bar-info">
+                <span class="bar-label">Inicializando</span>
+                <span class="bar-pct" id="barPct">0%</span>
+            </div>
+            <p class="status-msg status-glitch" id="statusMsg">Sistema listo</p>
+        </div>
+
+    </main>
+
+    <!-- SKIP BUTTON -->
+    <button class="skip-btn" id="skipBtn" onclick="goNow()">Saltar →</button>
+
+
+    <script>
+        // =============================================
+        // ⚙️ CONFIGURACIÓN
+        // =============================================
+        const REDIRECT_URL = 'dgcreators-index.html'; // ← TU URL DE DESTINO
+        const DURATION = 4500; // ms antes de redirigir
+        // =============================================
+
+        const barFill = document.getElementById('barFill');
+        const barPct = document.getElementById('barPct');
+        const statusMsg = document.getElementById('statusMsg');
+        const splash = document.getElementById('splash');
+
+        let redirecting = false;
+        const start = Date.now();
+
+        // Mensajes de estado sincronizados con animaciones visuales
+        const messages = [
+            { at: 0,     txt: ' Iniciando sistema...' },
+            { at: 600,   txt: ' Cargando módulos...' },
+            { at: 1200,  txt: ' Renderizando logo...' },
+            { at: 1800,  txt: ' Aplicando efectos...' },
+            { at: 2400,  txt: ' Compilando interfaz...' },
+            { at: 3000,  txt: ' Activando glitch...' },
+            { at: 3600,  txt: ' Preparando lanzamiento...' },
+            { at: 4200,  txt: ' ¡Listo!' }
+        ];
+
+        function updateBar() {
+            if (redirecting) return;
+
+            const elapsed = Date.now() - start;
+            const raw = Math.min(elapsed / DURATION, 1);
+            // Ease out cubic
+            const progress = 1 - Math.pow(1 - raw, 3);
+
+            barFill.style.width = (progress * 100) + '%';
+            barPct.textContent = Math.floor(progress * 100) + '%';
+
+            // Actualizar mensaje
+            let currentMsg = messages[0].txt;
+            for (let i = messages.length - 1; i >= 0; i--) {
+                if (elapsed >= messages[i].at) {
+                    currentMsg = messages[i].txt;
+                    break;
+                }
+            }
+            statusMsg.textContent = currentMsg;
+
+            if (raw < 1) {
+                requestAnimationFrame(updateBar);
+            } else {
+                setTimeout(goNow, 350);
+            }
+        }
+
+        function goNow() {
+            if (redirecting) return;
+            redirecting = true;
+
+            document.body.classList.add('exiting');
+
+            setTimeout(() => {
+                window.location.href = REDIRECT_URL;
+            }, 650);
+        }
+
+        // Iniciar barra después de un breve delay
+        setTimeout(updateBar, 200);
+
+        // Failsafe
+        setTimeout(() => {
+            if (!redirecting) goNow();
+        }, DURATION + 2000);
+
+        // Teclado
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' || e.key === ' ') goNow();
+        });
+
+        // Console
+        console.log(
+            '%c⚡ DGCreators.CA %cSplash',
+            'font-size:28px;font-weight:900;color:#ff2d6a;',
+            'font-size:14px;color:#00f0ff;'
+        );
+        console.log('%c→ ' + REDIRECT_URL, 'color:#b8ff00;');
+    </script>
+</body>
+</html>
